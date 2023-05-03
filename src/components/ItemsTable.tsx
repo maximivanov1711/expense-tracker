@@ -1,4 +1,7 @@
 import { Item } from './ItemForm';
+import styled from 'styled-components';
+import { useState } from 'react';
+import { ChangeEvent } from 'react';
 
 type Props = {
   items: Item[];
@@ -6,6 +9,21 @@ type Props = {
 };
 
 const ItemsTable = ({ items, onDelete }: Props) => {
+  const [selectedCategory, setSelectedCategory] = useState('All categories');
+
+  let itemsToShow =
+    selectedCategory === 'All categories'
+      ? items
+      : items.filter(item => item.category === selectedCategory);
+
+  const onChangeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const SelectWrapper = styled.div`
+    margin-bottom: 10px;
+  `;
+
   const ItemRow = (item: Item) => {
     return (
       <tr key={item.desc}>
@@ -26,6 +44,18 @@ const ItemsTable = ({ items, onDelete }: Props) => {
 
   return (
     <>
+      <SelectWrapper>
+        <select
+          className='form-select'
+          value={selectedCategory}
+          onChange={onChangeCategory}
+        >
+          <option value='All categories'>All categories</option>
+          <option value='Not set'>Not set</option>
+          <option value='Food'>Food</option>
+          <option value='Other'>Other</option>
+        </select>
+      </SelectWrapper>
       <table className='table table-bordered'>
         <thead>
           <tr>
@@ -35,12 +65,12 @@ const ItemsTable = ({ items, onDelete }: Props) => {
             <th></th>
           </tr>
         </thead>
-        <tbody>{items.map(ItemRow)}</tbody>
+        <tbody>{itemsToShow.map(ItemRow)}</tbody>
         <tfoot>
           <tr>
             <th>
-              Total:{' '}
-              {items.reduce((acc, item) => {
+              Total: $
+              {itemsToShow.reduce((acc, item) => {
                 return acc + item.amount;
               }, 0)}
             </th>

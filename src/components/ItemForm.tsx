@@ -31,7 +31,7 @@ const ItemForm = ({ items, onAdd }: Props) => {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitted, isValid, errors },
+    formState: { errors },
   } = useForm<Item>({
     resolver: zodResolver(createSchema(items)),
   });
@@ -83,11 +83,7 @@ const ItemForm = ({ items, onAdd }: Props) => {
           <option value='Other'>Other</option>
         </select>
       </div>
-      <button
-        className='btn btn-primary'
-        type='submit'
-        disabled={isSubmitted && !isValid}
-      >
+      <button className='btn btn-primary' type='submit'>
         Add
       </button>
     </form>
