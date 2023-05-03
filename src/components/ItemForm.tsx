@@ -1,6 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FieldValues, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+type Props = {
+  onAdd: (item: Item) => void;
+};
 
 const schema = z.object({
   desc: z.string().nonempty({ message: 'Enter description' }),
@@ -9,16 +13,16 @@ const schema = z.object({
     .min(1, { message: 'Amound must be more than 0' }),
   category: z.enum(['Not set', 'Food', 'Other']),
 });
-type FormData = z.infer<typeof schema>;
+type Item = z.infer<typeof schema>;
 
-const ItemForm = () => {
+const ItemForm = ({ onAdd }: Props) => {
   const {
     register,
     handleSubmit,
     formState: { isSubmitted, isValid, errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<Item>({ resolver: zodResolver(schema) });
 
-  const onSubmit = (data: FieldValues) => console.log(data);
+  const onSubmit = (item: Item) => onAdd(item);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -77,3 +81,4 @@ const ItemForm = () => {
 };
 
 export default ItemForm;
+export type { Item };
