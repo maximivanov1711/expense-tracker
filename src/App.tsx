@@ -12,12 +12,18 @@ function App() {
     console.log(items);
   };
 
+  const onDelete = (desc: string) => {
+    setItems(items.filter(item => item.desc !== desc));
+  };
+
   return (
     <>
       <div className='container justify-content-center '>
         <h1 className='text-center'>Expense tracker</h1>
-        <ItemForm onAdd={onAdd} />
-        <ItemsTable />
+        <div className='item-form-wrapper'>
+          <ItemForm items={items} onAdd={onAdd} />
+        </div>
+        <ItemsTable items={items} onDelete={onDelete} />
       </div>
     </>
   );

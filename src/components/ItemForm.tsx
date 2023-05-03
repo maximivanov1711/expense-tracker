@@ -2,25 +2,39 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+type Item = {
+  desc: string;
+  amount: number;
+  category: 'Not set' | 'Food' | 'Other';
+};
+
 type Props = {
+  items: Item[];
   onAdd: (item: Item) => void;
 };
 
-const schema = z.object({
-  desc: z.string().nonempty({ message: 'Enter description' }),
-  amount: z
-    .number({ invalid_type_error: 'Amound must be more than 0' })
-    .min(1, { message: 'Amound must be more than 0' }),
-  category: z.enum(['Not set', 'Food', 'Other']),
-});
-type Item = z.infer<typeof schema>;
+const createSchema = (items: Item[]) =>
+  z.object({
+    desc: z
+      .string()
+      .nonempty({ message: 'Enter description' })
+      .refine(desc => !items.some(item => item.desc === desc), {
+        message: 'This item already exists',
+      }),
+    amount: z
+      .number({ invalid_type_error: 'Amount must be more than 0' })
+      .min(1, { message: 'Amount must be more than 0' }),
+    category: z.enum(['Not set', 'Food', 'Other']),
+  });
 
-const ItemForm = ({ onAdd }: Props) => {
+const ItemForm = ({ items, onAdd }: Props) => {
   const {
     register,
     handleSubmit,
     formState: { isSubmitted, isValid, errors },
-  } = useForm<Item>({ resolver: zodResolver(schema) });
+  } = useForm<Item>({
+    resolver: zodResolver(createSchema(items)),
+  });
 
   const onSubmit = (item: Item) => onAdd(item);
 
@@ -80,5 +94,5 @@ const ItemForm = ({ onAdd }: Props) => {
   );
 };
 
-export default ItemForm;
 export type { Item };
+export default ItemForm;
